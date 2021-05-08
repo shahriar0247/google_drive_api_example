@@ -52,14 +52,21 @@ def list_files():
         for item in items:
             print(u'{0} ({1})'.format(item['name'], item['id']))
 
-def upload_file(filepath, filename):
+def upload_file(filepath, filename, folder_id=None):
     drive_service = get_service()
-    file_metadata = {'name': filename}
+    if folder_id:
+        file_metadata = {
+            'name': filename,
+            'parents': [folder_id]
+        }
+    else:
+        file_metadata = {'name': filename}
+        
     media = MediaFileUpload(filepath, mimetype='image/jpeg')
     file = drive_service.files().create(body=file_metadata,
                                         media_body=media,
                                         fields='id').execute()
-    print ('File ID: %s' % file.get('id'))
+    
 
 def create_folder(name):
     drive_service = get_service()
@@ -70,5 +77,3 @@ def create_folder(name):
     file = drive_service.files().create(body=file_metadata,
                                         fields='id').execute()
 
-if __name__ == '__main__':
-    create_folder("hello")
